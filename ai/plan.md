@@ -29,7 +29,8 @@ The scope is limited to two core parts:
 - Entire system runs locally
 - No database required - all processing is done in memory using JSON files
 - Implementation in TypeScript with minimal dependencies:
-  - axios (HTTP requests to OpenAI API)
-  - dotenv (environment variable management)
-  - uuid (unique ID generation)
+  - Node.js built-in `fetch` API (instead of axios)
+  - Node.js built-in `crypto.randomUUID()` (instead of uuid)
+  - OpenAI API key passed as parameter (instead of using dotenv)
+  - `fast-glob` library for file pattern matching (selected for better performance)
   - Other core utilities as needed
