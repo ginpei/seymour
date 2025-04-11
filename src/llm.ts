@@ -42,21 +42,42 @@ export async function postTextEmbedding(input: string, apiKey: string): Promise<
     }]
   };
   const vector = result.data[0].embedding;
-  
+
   return vector;
 }
 
 /**
  * Finds the top matching chunks based on cosine similarity to the query vector
  */
-export function findTopMatches(chunks: VectoredChunks[], queryVector: number[], limit: number = 5): (VectoredChunks & { similarity: number })[] {
-  return chunks
-    .map((chunk) => ({
-      ...chunk,
-      similarity: cosineSimilarity(chunk.vector, queryVector),
-    }))
+export function findTopMatches(chunks: VectoredChunks[], queryVector: number[], limit: number = 5): { filePath: string; similarity: number }[] {
+  const fileScoresMap: Record<string, number[]> = {};
+
+  for (const chunk of chunks) {
+    if (fileScoresMap[chunk.filePath] === undefined) {
+      fileScoresMap[chunk.filePath] = [];
+    }
+
+    const score = cosineSimilarity(chunk.vector, queryVector);
+    fileScoresMap[chunk.filePath].push(score)
+  }
+
+  const scores = Object.entries(fileScoresMap)
+    .map(([filePath, similarity]) => ({
+      filePath,
+      similarity,
+    }));
+
+  const chunkLimit = 5;
+  const topScores = scores.map((score) => ({
+    filePath: score.filePath,
+    similarity: score.similarity.sort((a, b) => b - a).slice(0, chunkLimit).reduce((a, b) => a + b, 0),
+  }));
+
+  const topFiles = topScores
     .sort((a, b) => b.similarity - a.similarity)
     .slice(0, limit);
+
+  return topFiles;
 }
 
 /**

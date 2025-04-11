@@ -26,7 +26,7 @@ async function main() {
   const topMatches = findTopMatches(chunks, vector, 5);
   const elapsed = Date.now() - startedAt;
 
-  console.log(`Top matches (${elapsed}ms):`, topMatches.map((v) => `${v.content} (${v.filePath})`));
+  console.log(`Top matches (${elapsed}ms):`, topMatches.map((v) => `${v.filePath} (${v.similarity.toFixed(2)})`));
 }
 
 /**
