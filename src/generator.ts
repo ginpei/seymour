@@ -2,23 +2,13 @@ import { glob } from 'fast-glob';
 import MarkdownIt from 'markdown-it';
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { postTextEmbedding, MarkdownChunk, VectoredChunks } from './llm';
 
 export interface GeneratorConfig {
   cacheDir?: string;
   onEmbedProgress?: (index: number, length: number) => void;
   OPENAI_API_KEY: string;
   pattern: string;
-}
-
-interface MarkdownChunk {
-  filePath: string;
-  header: string;
-  content: string;
-  charCount: number;
-}
-
-interface VectoredChunks extends MarkdownChunk {
-  vector: number[];
 }
 
 const md = new MarkdownIt();
@@ -42,7 +32,7 @@ export async function generate(config: GeneratorConfig) {
 
   const vectoredChunks: VectoredChunks[] = [];
   for (const chunk of chunks) {
-    const vector = readEmbeddingCache(chunk.content, config) ?? await embedText(chunk.content, config);
+    const vector = readEmbeddingCache(chunk.content, config) ?? await postTextEmbedding(chunk.content, config.OPENAI_API_KEY);
     vectoredChunks.push({
       ...chunk,
       vector,
@@ -116,36 +106,6 @@ function chunkMarkdown(body: string, filePath: string): MarkdownChunk[] {
   }
 
   return chunks;
-}
-
-async function embedText(input: string, config: GeneratorConfig): Promise<number[]> {
-  const API_URL = 'https://api.openai.com/v1/embeddings';
-  const MODEL = 'text-embedding-3-small';
-
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${config.OPENAI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      input,
-      model: MODEL,
-    }),
-  });
-
-  if (!res.ok) {
-    console.error(res);
-    throw new Error(`Failed to fetch embedding: ${res.status} ${res.statusText}`);
-  }
-
-  const result = await res.json() as {
-    data: [{
-      embedding: number[];
-    }]
-  };
-  const vector = result.data[0].embedding;
-  return vector;
 }
 
 function cacheEmbedding(content: string, vector: number[], config: GeneratorConfig) {
