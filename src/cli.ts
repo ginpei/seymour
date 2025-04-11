@@ -37,9 +37,9 @@ function printUsage() {
 }
 
 function readChunks(): VectoredChunks[] {
-  if (existsSync('../,chunks.json')) {
-    throw new Error('Generate ,chunks.json first');
+  if (existsSync('../chunks.json')) {
+    throw new Error('Generate chunks.json first');
   }
-  const chunks = require('../,chunks.json');
+  const chunks = require('../chunks.json');
   return chunks;
 }
