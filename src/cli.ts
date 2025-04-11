@@ -1,5 +1,8 @@
+import dotenv from "dotenv";
 import { existsSync } from "fs";
-import { postTextEmbedding, findTopMatches, VectoredChunks } from "./llm";
+import { findTopMatches, postTextEmbedding, VectoredChunks } from "./llm";
+
+dotenv.config();
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 
