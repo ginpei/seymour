@@ -1,5 +1,5 @@
-import { generateDocumentChunks } from "../../lib/generator";
-import { writeChunks } from "../../lib/files";
+import { generateDocumentChunks } from "../lib/generator";
+import { writeChunks } from "../lib/files";
 
 export async function generate(pattern: string) {
   process.stdout.write(`Embedding...\r`);

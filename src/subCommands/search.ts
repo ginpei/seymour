@@ -1,5 +1,5 @@
-import { readChunks } from "../../lib/files";
-import { findTopMatches, postTextEmbedding } from "../../lib/llm";
+import { readChunks } from "../lib/files";
+import { findTopMatches, postTextEmbedding } from "../lib/llm";
 
 export async function search(question: string, OPENAI_API_KEY: string) {
   const chunks = readChunks();
