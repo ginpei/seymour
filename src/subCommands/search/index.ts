@@ -1,6 +1,5 @@
-import { existsSync } from "node:fs";
-import { findTopMatches, postTextEmbedding, VectoredChunks } from "../../llm";
-import { resolve } from "node:path";
+import { readChunks } from "../../lib/files";
+import { findTopMatches, postTextEmbedding } from "../../lib/llm";
 
 export async function search(question: string, OPENAI_API_KEY: string) {
   const chunks = readChunks();
@@ -17,14 +16,4 @@ export async function search(question: string, OPENAI_API_KEY: string) {
     `Top matches (${elapsed} ms/${chunks.length} chunks):`,
     topMatches.map((v) => `${v.filePath} (${v.similarity.toFixed(2)})`)
   );
-}
-
-function readChunks(): VectoredChunks[] {
-  const chunkPath = resolve(__dirname, '../../../chunks.json');
-
-  if (!existsSync(chunkPath)) {
-    throw new Error('Generate chunks.json first');
-  }
-  const chunks = require(chunkPath);
-  return chunks;
 }

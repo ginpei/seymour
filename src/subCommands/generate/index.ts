@@ -1,7 +1,5 @@
-import { writeFileSync } from "node:fs";
-import { generateDocumentChunks } from "../../generator";
-import { resolve } from "node:path";
-import { VectoredChunks } from "../../llm";
+import { generateDocumentChunks } from "../../lib/generator";
+import { writeChunks } from "../../lib/files";
 
 export async function generate(pattern: string) {
   process.stdout.write(`Embedding...\r`);
@@ -19,10 +17,4 @@ export async function generate(pattern: string) {
 
   writeChunks(chunks);
   console.log(`Generated ${chunks.length} chunks`);
-}
-
-function writeChunks(chunks: VectoredChunks[]) {
-  const chunkPath = resolve(__dirname, '../../../chunks.json');
-  writeFileSync(chunkPath, JSON.stringify(chunks, null, 2));
-
 }
