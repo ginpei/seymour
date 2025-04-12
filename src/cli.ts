@@ -1,49 +1,36 @@
+import { Command } from 'commander';
 import dotenv from "dotenv";
-import { existsSync } from "fs";
-import { findTopMatches, postTextEmbedding, VectoredChunks } from "./llm";
+import { generate } from './subCommands/generate';
+import { search } from './subCommands/search';
 
 dotenv.config();
-
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
-
 main();
 
-async function main() {
-  const args = process.argv.slice(2);
-  const question = args.join(' ').trim();
-
-  if (OPENAI_API_KEY === '' || question === '') {
-    printUsage();
-    return;
+function main() {
+  if (!OPENAI_API_KEY) {
+    console.error('Error: OPENAI_API_KEY is not set in .env file');
+    process.exit(1);
   }
 
-  const chunks = readChunks();
+  const program = new Command();
 
-  const query = `About: ${question}`;
-  console.log(`Embedding your question...`, query);
-  const vector = await postTextEmbedding(query, OPENAI_API_KEY);
+  program
+    .name('seymour')
+    .description('Semantic search over local Markdown docs')
+    .version('0.1.0');
 
-  const startedAt = Date.now();
-  const topMatches = findTopMatches(chunks, vector, 5);
-  const elapsed = Date.now() - startedAt;
+  program
+    .command('generate')
+    .argument('<pattern>', 'Glob pattern to match markdown files')
+    .description('Generate chunks and embeddings from markdown files')
+    .action(generate);
 
-  console.log(
-    `Top matches (${elapsed} ms/${chunks.length} chunks):`,
-    topMatches.map((v) => `${v.filePath} (${v.similarity.toFixed(2)})`)
-  );
-}
+  program
+    .command('search')
+    .argument('<query>', 'Natural language query')
+    .description('Search chunks using semantic similarity')
+    .action((query) => search(query, OPENAI_API_KEY));
 
-/**
- * Prints usage instructions to the console
- */
-function printUsage() {
-  console.log('Usage: $ OPENAI_API_KEY=xxx seymour <question>');
-}
-
-function readChunks(): VectoredChunks[] {
-  if (existsSync('../chunks.json')) {
-    throw new Error('Generate chunks.json first');
-  }
-  const chunks = require('../chunks.json');
-  return chunks;
+  program.parse();
 }
