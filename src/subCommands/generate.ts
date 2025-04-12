@@ -10,7 +10,8 @@ export async function generate(pathOrPattern: string) {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
     pattern,
     onEmbedProgress: (index, length) => {
-      process.stdout.write(`Embedding ${index} / ${length} (${((index / length) * 100).toFixed(2)}%)\r`);
+      const percent = ((index / length) * 100).toFixed(2);
+      process.stdout.write(`Embedding ${index} / ${length} (${percent}%)\r`);
       if (index === length) {
         process.stdout.write(`\n`);
       }
