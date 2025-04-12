@@ -19,8 +19,9 @@ async function main() {
 
   const chunks = readChunks();
 
-  console.log(`Embedding your question...`);
-  const vector = await postTextEmbedding(`About: ${question}`, OPENAI_API_KEY);
+  const query = `About: ${question}`;
+  console.log(`Embedding your question...`, query);
+  const vector = await postTextEmbedding(query, OPENAI_API_KEY);
 
   const startedAt = Date.now();
   const topMatches = findTopMatches(chunks, vector, 5);
