@@ -3,8 +3,6 @@ import { writeChunks } from "../lib/files";
 import { generateDocumentChunks } from "../lib/generator";
 
 export async function generate(pathOrPattern: string) {
-  process.stdout.write(`Embedding...\r`);
-
   const pattern = pathToPattern(pathOrPattern);
 
   const chunks = await generateDocumentChunks({
@@ -13,10 +11,11 @@ export async function generate(pathOrPattern: string) {
     pattern,
     onEmbedProgress: (index, length) => {
       process.stdout.write(`Embedding ${index} / ${length} (${((index / length) * 100).toFixed(2)}%)\r`);
+      if (index === length) {
+        process.stdout.write(`\n`);
+      }
     },
   });
-
-  process.stdout.write(`\n`);
 
   writeChunks(chunks);
   console.log(`Generated ${chunks.length} chunks`);
