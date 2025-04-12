@@ -5,7 +5,7 @@ export async function generate(pattern: string) {
   process.stdout.write(`Embedding...\r`);
 
   const chunks = await generateDocumentChunks({
-    cacheDir: './,cache',
+    cacheDir: './cache',
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
     pattern: '../rad/front/docs/**/*.md',
     onEmbedProgress: (index, length) => {
