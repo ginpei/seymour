@@ -17,7 +17,11 @@ A simple CLI tool for semantic search over local Markdown documentation using Op
 ## Installation
 
 ```bash
+# Global installation
 npm install -g @ginpei/seymour
+
+# Or install as a development dependency
+npm install -D @ginpei/seymour
 ```
 
 Requires:
@@ -99,4 +103,4 @@ OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxx
 
 ## License
 
-None
+UNLICENSED

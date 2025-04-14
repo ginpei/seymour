@@ -1,7 +1,10 @@
 {
-  "name": "seymour",
-  "version": "1.0.0",
+  "name": "@ginpei/seymour",
+  "version": "0.1.0",
   "main": "dist/index.js",
+  "bin": {
+    "seymour": "./dist/cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
@@ -11,10 +14,17 @@
     "format": "prettier --write \"src/**/*.{ts,js}\"",
     "format:check": "prettier --check \"src/**/*.{ts,js}\""
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": ["semantic-search", "embeddings", "openai", "cli", "markdown"],
+  "author": "Ginpei",
+  "license": "UNLICENSED",
+  "description": "A simple CLI tool for semantic search over local Markdown documentation using OpenAI embeddings",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ginpei/seymour.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "commander": "^13.1.0",
     "dotenv": "^16.5.0",
