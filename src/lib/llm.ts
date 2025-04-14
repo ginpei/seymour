@@ -13,15 +13,18 @@ export interface VectoredChunks extends MarkdownChunk {
  * Requests OpenAI API to get text embedding for the given input string
  * @see https://platform.openai.com/docs/guides/embeddings
  */
-export async function postTextEmbedding(input: string, apiKey: string): Promise<number[]> {
-  const API_URL = 'https://api.openai.com/v1/embeddings';
-  const MODEL = 'text-embedding-3-small';
+export async function postTextEmbedding(
+  input: string,
+  apiKey: string,
+): Promise<number[]> {
+  const API_URL = "https://api.openai.com/v1/embeddings";
+  const MODEL = "text-embedding-3-small";
 
   const res = await fetch(API_URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       input,
@@ -31,15 +34,19 @@ export async function postTextEmbedding(input: string, apiKey: string): Promise<
 
   if (!res.ok) {
     console.error(res);
-    throw new Error(`Failed to fetch embedding: ${res.status} ${res.statusText}`);
+    throw new Error(
+      `Failed to fetch embedding: ${res.status} ${res.statusText}`,
+    );
   }
 
   // find response type in the OpenAI API documentation:
   // https://platform.openai.com/docs/api-reference/embeddings
-  const result = await res.json() as {
-    data: [{
-      embedding: number[];
-    }]
+  const result = (await res.json()) as {
+    data: [
+      {
+        embedding: number[];
+      },
+    ];
   };
   const vector = result.data[0].embedding;
 
@@ -49,7 +56,11 @@ export async function postTextEmbedding(input: string, apiKey: string): Promise<
 /**
  * Finds the top matching chunks based on cosine similarity to the query vector
  */
-export function findTopMatches(chunks: VectoredChunks[], queryVector: number[], limit: number = 5): { filePath: string; similarity: number }[] {
+export function findTopMatches(
+  chunks: VectoredChunks[],
+  queryVector: number[],
+  limit: number = 5,
+): { filePath: string; similarity: number }[] {
   const fileScoresMap: Record<string, number[]> = {};
 
   for (const chunk of chunks) {
@@ -58,19 +69,23 @@ export function findTopMatches(chunks: VectoredChunks[], queryVector: number[], 
     }
 
     const score = cosineSimilarity(chunk.vector, queryVector);
-    fileScoresMap[chunk.filePath].push(score)
+    fileScoresMap[chunk.filePath].push(score);
   }
 
-  const scores = Object.entries(fileScoresMap)
-    .map(([filePath, similarity]) => ({
+  const scores = Object.entries(fileScoresMap).map(
+    ([filePath, similarity]) => ({
       filePath,
       similarity,
-    }));
+    }),
+  );
 
   const chunkLimit = 5;
   const topScores = scores.map((score) => ({
     filePath: score.filePath,
-    similarity: score.similarity.sort((a, b) => b - a).slice(0, chunkLimit).reduce((a, b) => a + b, 0),
+    similarity: score.similarity
+      .sort((a, b) => b - a)
+      .slice(0, chunkLimit)
+      .reduce((a, b) => a + b, 0),
   }));
 
   const topFiles = topScores

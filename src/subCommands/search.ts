@@ -14,6 +14,6 @@ export async function search(question: string, OPENAI_API_KEY: string) {
 
   console.log(
     `Top matches (${elapsed} ms/${chunks.length} chunks):`,
-    topMatches.map((v) => `${v.filePath} (${v.similarity.toFixed(2)})`)
+    topMatches.map((v) => `${v.filePath} (${v.similarity.toFixed(2)})`),
   );
 }

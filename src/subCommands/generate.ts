@@ -6,8 +6,8 @@ export async function generate(pathOrPattern: string) {
   const pattern = pathToPattern(pathOrPattern);
 
   const chunks = await generateDocumentChunks({
-    cacheDir: './cache',
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
+    cacheDir: "./cache",
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
     pattern,
     onEmbedProgress: (index, length) => {
       const percent = ((index / length) * 100).toFixed(2);

@@ -6,7 +6,7 @@ export function readChunks(): VectoredChunks[] {
   const chunkPath = getChunkFilePath();
 
   if (!existsSync(chunkPath)) {
-    throw new Error('Generate chunks.json first');
+    throw new Error("Generate chunks.json first");
   }
   const chunks = require(chunkPath);
   return chunks;
@@ -18,6 +18,6 @@ export function writeChunks(chunks: VectoredChunks[]) {
 }
 
 function getChunkFilePath() {
-  const chunkPath = resolve(__dirname, '../../../chunks.json');
+  const chunkPath = resolve(__dirname, "../../../chunks.json");
   return chunkPath;
 }
