@@ -28,7 +28,20 @@ async function readMarkdownFiles(pathOrPattern: string) {
     cacheDir: "./cache",
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
     pattern,
+    onReadProgress: (index: number, length: number) => {
+      const percent = ((index / length) * 100).toFixed(2);
+      process.stdout.write("\r\x1b[K"); // clear line
+      process.stdout.write(`Reading ${index} / ${length} (${percent}%)`); // without newline
+      if (index === length) {
+        process.stdout.write(`\n`);
+      }
+    },
     onEmbedProgress: (index: number, length: number) => {
+      if (length === 0) {
+        process.stdout.write(`Embedding 0 / 0\n`);
+        return;
+      }
+
       const percent = ((index / length) * 100).toFixed(2);
       process.stdout.write("\r\x1b[K"); // clear line
       process.stdout.write(`Embedding ${index} / ${length} (${percent}%)`); // without newline
