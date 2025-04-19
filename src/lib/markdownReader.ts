@@ -27,7 +27,7 @@ const md = new MarkdownIt();
  * writeFileSync('chunks.json', JSON.stringify(chunks, null, 2));
  * console.log(`Generated ${chunks.length} chunks`);
  */
-export async function generateMarkdownChunks(config: MarkdownReaderConfig) {
+export async function readMarkdownChunks(config: MarkdownReaderConfig) {
   const chunks = await readMarkdowns(config.pattern);
 
   const vectoredChunks: VectoredChunk[] = [];

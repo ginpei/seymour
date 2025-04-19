@@ -23,8 +23,9 @@ function main() {
 
   program
     .command("read")
-    .argument("<pattern>", "Glob pattern to match markdown files")
-    .description("Generate chunks and embeddings from markdown files")
+    .argument("<type>", "Document type to process (md, ts)")
+    .argument("<pattern>", "Glob pattern to match files")
+    .description("Generate chunks and embeddings from files")
     .action(read);
 
   program

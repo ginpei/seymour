@@ -36,13 +36,21 @@ Requires:
 ### 1. Generate chunk and embedding data
 
 ```bash
-seymour read "./docs/**/*.md"
+seymour read md "./docs/**/*.md"
 ```
 
 - Recursively scans for `.md` files  
 - Splits content at headings (`#`, `##`, etc.)  
 - Uses OpenAI `text-embedding-3-small` to embed each chunk  
 - Outputs to `chunks.json`
+
+#### TypeScript Support (Coming Soon)
+
+```bash
+seymour read ts "./src/**/*.ts"
+```
+
+- Support for TypeScript files is under development
 
 ### 2. Search with a natural language query
 

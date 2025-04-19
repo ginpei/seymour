@@ -52,3 +52,11 @@
     - Changed VectoredChunks to VectoredChunk
   - Made Markdown-specific functions more explicit:
     - Updated pathToPattern to pathToMarkdownPattern
+
+## 2025-04-19 13:45
+- Updated the `read` command to accept document type parameter
+- Added support for specifying document types:
+  - `seymour read md "./docs/**/*.md"` for Markdown files (fully functional)
+  - `seymour read ts "./src/**/*.ts"` for TypeScript files (placeholder)
+- Updated all error messages and examples in README.md
+- Created a foundation for adding TypeScript processing in the future

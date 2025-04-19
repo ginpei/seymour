@@ -5,7 +5,7 @@ export async function search(question: string, OPENAI_API_KEY: string) {
   if (!chunksExist()) {
     console.error("\x1b[31mError: No embeddings found\x1b[0m");
     console.error("\nYou need to generate embeddings first by running:");
-    console.error('\x1b[33m  seymour read "./path/to/docs/**/*.md"\x1b[0m');
+    console.error('\x1b[33m  seymour read md "./path/to/docs/**/*.md"\x1b[0m');
     console.error("\nReplace the path with the location of your markdown files.");
     process.exit(1);
   }
@@ -17,7 +17,7 @@ export async function search(question: string, OPENAI_API_KEY: string) {
     console.error("\x1b[31mError: Failed to read embeddings\x1b[0m");
     console.error(error instanceof Error ? error.message : String(error));
     console.error("\nTry regenerating your embeddings:");
-    console.error('\x1b[33m  seymour read "./path/to/docs/**/*.md"\x1b[0m');
+    console.error('\x1b[33m  seymour read md "./path/to/docs/**/*.md"\x1b[0m');
     process.exit(1);
   }
 
