@@ -1,11 +1,11 @@
 import { existsSync, statSync } from "node:fs";
 import { writeChunks } from "../lib/files";
-import { generateDocumentChunks } from "../lib/generator";
+import { generateMarkdownChunks } from "../lib/markdownReader";
 
-export async function generate(pathOrPattern: string) {
-  const pattern = pathToPattern(pathOrPattern);
+export async function read(pathOrPattern: string) {
+  const pattern = pathToMarkdownPattern(pathOrPattern);
 
-  const chunks = await generateDocumentChunks({
+  const chunks = await generateMarkdownChunks({
     cacheDir: "./cache",
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
     pattern,
@@ -22,7 +22,12 @@ export async function generate(pathOrPattern: string) {
   console.log(`Generated ${chunks.length} chunks`);
 }
 
-function pathToPattern(input: string) {
+/**
+ * Convert a path to a pattern for matching Markdown files.
+ * If the input is a directory, append wildcard pattern to match all Markdown files.
+ * Otherwise, return the input as is.
+ */
+function pathToMarkdownPattern(input: string) {
   if (existsSync(input)) {
     const status = statSync(input);
     if (status.isDirectory()) {

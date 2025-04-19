@@ -1,11 +1,11 @@
-export interface MarkdownChunk {
+export interface ContentChunk {
   filePath: string;
   header: string;
   content: string;
   charCount: number;
 }
 
-export interface VectoredChunks extends MarkdownChunk {
+export interface VectoredChunk extends ContentChunk {
   vector: number[];
 }
 
@@ -57,7 +57,7 @@ export async function postTextEmbedding(
  * Finds the top matching chunks based on cosine similarity to the query vector
  */
 export function findTopMatches(
-  chunks: VectoredChunks[],
+  chunks: VectoredChunk[],
   queryVector: number[],
   limit: number = 5,
 ): { filePath: string; similarity: number }[] {

@@ -29,3 +29,26 @@
   - Set license to UNLICENSED
   - Updated README with English installation instructions
 - Removed outdated plan.md file as implementation is now complete
+
+## 2025-04-19 12:30
+- Renamed subcommand `generate` to `read` to better reflect its function
+- Updated references in all relevant files:
+  - Changed src/subCommands/generate.ts to src/subCommands/read.ts
+  - Updated function export name from `generate` to `read`
+  - Updated CLI import and command setup in src/cli.ts
+  - Updated error messages in src/subCommands/search.ts
+  - Updated usage examples in README.md
+- Renamed related files to maintain naming consistency:
+  - Changed src/lib/generator.ts to src/lib/documentReader.ts
+  - Updated GeneratorConfig to DocumentReaderConfig
+  - Updated generateDocumentChunks to readDocumentChunks
+  - Updated import in src/subCommands/read.ts
+- Made file and function names reflect future TypeScript support:
+  - Changed src/lib/documentReader.ts to src/lib/markdownReader.ts
+  - Updated DocumentReaderConfig to MarkdownReaderConfig
+  - Updated readDocumentChunks to readMarkdownChunks
+  - Made interfaces more generic:
+    - Changed MarkdownChunk to ContentChunk
+    - Changed VectoredChunks to VectoredChunk
+  - Made Markdown-specific functions more explicit:
+    - Updated pathToPattern to pathToMarkdownPattern

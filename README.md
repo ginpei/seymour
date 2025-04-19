@@ -36,7 +36,7 @@ Requires:
 ### 1. Generate chunk and embedding data
 
 ```bash
-seymour generate "./docs/**/*.md"
+seymour read "./docs/**/*.md"
 ```
 
 - Recursively scans for `.md` files  

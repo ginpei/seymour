@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from "commander";
 import dotenv from "dotenv";
-import { generate } from "./subCommands/generate";
+import { read } from "./subCommands/read";
 import { search } from "./subCommands/search";
 
 dotenv.config();
@@ -22,10 +22,10 @@ function main() {
     .version("0.1.0");
 
   program
-    .command("generate")
+    .command("read")
     .argument("<pattern>", "Glob pattern to match markdown files")
     .description("Generate chunks and embeddings from markdown files")
-    .action(generate);
+    .action(read);
 
   program
     .command("search")

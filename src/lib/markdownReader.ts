@@ -2,9 +2,9 @@ import { glob } from "fast-glob";
 import MarkdownIt from "markdown-it";
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { postTextEmbedding, MarkdownChunk, VectoredChunks } from "./llm";
+import { postTextEmbedding, ContentChunk, VectoredChunk } from "./llm";
 
-export interface GeneratorConfig {
+export interface MarkdownReaderConfig {
   cacheDir?: string;
   onEmbedProgress?: (index: number, length: number) => void;
   OPENAI_API_KEY: string;
@@ -15,7 +15,7 @@ const md = new MarkdownIt();
 
 /**
  * @example
- * const chunks = await generate({
+ * const chunks = await readMarkdownChunks({
  *   cacheDir: './cache',
  *   OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
  *   pattern: './docs/**\/*.md',
@@ -27,10 +27,10 @@ const md = new MarkdownIt();
  * writeFileSync('chunks.json', JSON.stringify(chunks, null, 2));
  * console.log(`Generated ${chunks.length} chunks`);
  */
-export async function generateDocumentChunks(config: GeneratorConfig) {
+export async function generateMarkdownChunks(config: MarkdownReaderConfig) {
   const chunks = await readMarkdowns(config.pattern);
 
-  const vectoredChunks: VectoredChunks[] = [];
+  const vectoredChunks: VectoredChunk[] = [];
   for (const chunk of chunks) {
     const vector =
       readEmbeddingCache(chunk.content, config) ??
@@ -47,7 +47,7 @@ export async function generateDocumentChunks(config: GeneratorConfig) {
   return vectoredChunks;
 }
 
-async function readMarkdowns(pattern: string): Promise<MarkdownChunk[]> {
+async function readMarkdowns(pattern: string): Promise<ContentChunk[]> {
   const paths = await glob(pattern);
 
   const chunks = (
@@ -66,9 +66,9 @@ async function readMarkdowns(pattern: string): Promise<MarkdownChunk[]> {
 /**
  * Split Markdown content into chunks starting at each heading (#, ##, ###, etc.)
  */
-function chunkMarkdown(body: string, filePath: string): MarkdownChunk[] {
+function chunkMarkdown(body: string, filePath: string): ContentChunk[] {
   const tokens = md.parse(body, {});
-  const chunks: MarkdownChunk[] = [];
+  const chunks: ContentChunk[] = [];
 
   let currentChunk = "";
   let currentHeader = "";
@@ -117,7 +117,7 @@ function chunkMarkdown(body: string, filePath: string): MarkdownChunk[] {
 function cacheEmbedding(
   content: string,
   vector: number[],
-  config: GeneratorConfig,
+  config: MarkdownReaderConfig,
 ) {
   if (!config.cacheDir) {
     return;
@@ -134,7 +134,7 @@ function cacheEmbedding(
 
 function readEmbeddingCache(
   content: string,
-  config: GeneratorConfig,
+  config: MarkdownReaderConfig,
 ): number[] | null {
   if (!config.cacheDir) {
     return null;

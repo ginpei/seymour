@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { VectoredChunks } from "./llm";
+import { VectoredChunk } from "./llm";
 import { existsSync, writeFileSync } from "node:fs";
 
 export function chunksExist(): boolean {
@@ -7,7 +7,7 @@ export function chunksExist(): boolean {
   return existsSync(chunkPath);
 }
 
-export function readChunks(): VectoredChunks[] {
+export function readChunks(): VectoredChunk[] {
   const chunkPath = getChunkFilePath();
 
   if (!existsSync(chunkPath)) {
@@ -22,7 +22,7 @@ export function readChunks(): VectoredChunks[] {
   }
 }
 
-export function writeChunks(chunks: VectoredChunks[]) {
+export function writeChunks(chunks: VectoredChunk[]) {
   const chunkPath = getChunkFilePath();
   writeFileSync(chunkPath, JSON.stringify(chunks, null, 2));
 }
