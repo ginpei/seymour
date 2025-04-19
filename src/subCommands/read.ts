@@ -30,7 +30,8 @@ async function readMarkdownFiles(pathOrPattern: string) {
     pattern,
     onEmbedProgress: (index: number, length: number) => {
       const percent = ((index / length) * 100).toFixed(2);
-      process.stdout.write(`Embedding ${index} / ${length} (${percent}%)\r`);
+      process.stdout.write("\r\x1b[K"); // clear line
+      process.stdout.write(`Embedding ${index} / ${length} (${percent}%)`); // without newline
       if (index === length) {
         process.stdout.write(`\n`);
       }
