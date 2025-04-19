@@ -15,7 +15,7 @@ const md = new MarkdownIt();
 
 /**
  * @example
- * const chunks = await readMarkdownChunks({
+ * const chunks = await generateMarkdownChunks({
  *   cacheDir: './cache',
  *   OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
  *   pattern: './docs/**\/*.md',
@@ -27,7 +27,7 @@ const md = new MarkdownIt();
  * writeFileSync('chunks.json', JSON.stringify(chunks, null, 2));
  * console.log(`Generated ${chunks.length} chunks`);
  */
-export async function readMarkdownChunks(config: MarkdownReaderConfig) {
+export async function generateMarkdownChunks(config: MarkdownReaderConfig) {
   const chunks = await readMarkdowns(config.pattern);
 
   const vectoredChunks: VectoredChunk[] = [];

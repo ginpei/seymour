@@ -1,6 +1,6 @@
 import { existsSync, statSync } from "node:fs";
 import { writeChunks } from "../lib/files";
-import { readMarkdownChunks } from "../lib/markdownReader";
+import { generateMarkdownChunks } from "../lib/markdownReader";
 
 export async function read(type: string, pathOrPattern: string) {
   // Handle different document types
@@ -24,7 +24,7 @@ export async function read(type: string, pathOrPattern: string) {
 async function readMarkdownFiles(pathOrPattern: string) {
   const pattern = pathToMarkdownPattern(pathOrPattern);
 
-  const chunks = await readMarkdownChunks({
+  const chunks = await generateMarkdownChunks({
     cacheDir: "./cache",
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
     pattern,

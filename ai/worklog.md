@@ -60,3 +60,4 @@
   - `seymour read ts "./src/**/*.ts"` for TypeScript files (placeholder)
 - Updated all error messages and examples in README.md
 - Created a foundation for adding TypeScript processing in the future
+- Renamed `readMarkdownChunks` to `generateMarkdownChunks` to better reflect its purpose
