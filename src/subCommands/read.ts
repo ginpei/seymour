@@ -1,6 +1,7 @@
 import { existsSync, statSync } from "node:fs";
 import { writeChunks } from "../lib/files";
 import { generateMarkdownChunks } from "../lib/markdownReader";
+import { generateTypeScriptChunks } from "../lib/typescriptReader";
 
 export async function read(type: string, pathOrPattern: string) {
   // Handle different document types
@@ -56,12 +57,35 @@ async function readMarkdownFiles(pathOrPattern: string) {
 }
 
 /**
- * Process TypeScript files - currently just a placeholder
+ * Process TypeScript files and generate chunks with embeddings
  */
 async function readTypeScriptFiles(pathOrPattern: string) {
-  console.log("Hello world from TypeScript reader!");
-  console.log(`Pattern received: ${pathOrPattern}`);
-  console.log("TypeScript support is coming soon...");
+  const pattern = pathToTypeScriptPattern(pathOrPattern);
+
+  const chunks = await generateTypeScriptChunks({
+    cacheDir: "./cache",
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
+    pattern,
+    onReadProgress: (index: number, length: number) => {
+      const percent = ((index / length) * 100).toFixed(2);
+      process.stdout.write("\r\x1b[K"); // clear line
+      process.stdout.write(`Reading ${index} / ${length} (${percent}%)`); // without newline
+      if (index === length) {
+        process.stdout.write(`\n`);
+      }
+    },
+    onEmbedProgress: (index: number, length: number) => {
+      const percent = ((index / length) * 100).toFixed(2);
+      process.stdout.write("\r\x1b[K"); // clear line
+      process.stdout.write(`Embedding ${index} / ${length} (${percent}%)`); // without newline
+      if (index === length) {
+        process.stdout.write(`\n`);
+      }
+    },
+  });
+
+  writeChunks(chunks);
+  console.log(`Generated ${chunks.length} chunks`);
 }
 
 /**
@@ -74,6 +98,22 @@ function pathToMarkdownPattern(input: string) {
     const status = statSync(input);
     if (status.isDirectory()) {
       return `${input}${input.endsWith("/") ? "" : "/"}**/*.md`;
+    }
+  }
+
+  return input;
+}
+
+/**
+ * Convert a path to a pattern for matching TypeScript files.
+ * If the input is a directory, append wildcard pattern to match all TypeScript files.
+ * Otherwise, return the input as is.
+ */
+function pathToTypeScriptPattern(input: string) {
+  if (existsSync(input)) {
+    const status = statSync(input);
+    if (status.isDirectory()) {
+      return `${input}${input.endsWith("/") ? "" : "/"}**/*.{ts,tsx}`;
     }
   }
 

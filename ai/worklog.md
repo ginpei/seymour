@@ -61,3 +61,15 @@
 - Updated all error messages and examples in README.md
 - Created a foundation for adding TypeScript processing in the future
 - Renamed `readMarkdownChunks` to `generateMarkdownChunks` to better reflect its purpose
+
+## 2025-04-19 15:30
+- Implemented TypeScript support for the `read` command
+- Added `read ts` command that processes TypeScript files
+- Created TypeScript parsing functionality:
+  - Installed @typescript-eslint/parser package
+  - Implemented AST processing to extract:
+    - Class/method/function names
+    - Comments/JSDoc documentation
+    - Parameter and return type information
+  - Created template for converting extracted info to searchable chunks
+- Updated tsconfig.json with modern moduleResolution setting
