@@ -5,7 +5,6 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { postTextEmbedding, ContentChunk, VectoredChunk } from "./llm";
 
 export interface MarkdownReaderConfig {
-  cacheDir?: string;
   onReadProgress?: (index: number, length: number) => void;
   onEmbedProgress?: (index: number, length: number) => void;
   OPENAI_API_KEY: string;
@@ -154,34 +153,26 @@ function cacheEmbedding(
   vector: number[],
   config: MarkdownReaderConfig,
 ) {
-  if (!config.cacheDir) {
-    return;
-  }
-
   const hash = createHash("sha256");
   hash.update(content);
   const hex = hash.digest("hex");
 
-  const cachePath = `${config.cacheDir}/${hex}`;
-  mkdirSync(config.cacheDir, { recursive: true });
-  writeFileSync(cachePath, JSON.stringify(vector));
+  const filePath = `.seymour/embeddings/${hex}`;
+  mkdirSync('.seymour/embeddings', { recursive: true });
+  writeFileSync(filePath, JSON.stringify(vector));
 }
 
 function readEmbeddingCache(
   content: string,
   config: MarkdownReaderConfig,
 ): number[] | null {
-  if (!config.cacheDir) {
-    return null;
-  }
-
   const hash = createHash("sha256");
   hash.update(content);
   const hex = hash.digest("hex");
 
-  const cachePath = `${config.cacheDir}/${hex}`;
+  const filePath = `.seymour/embeddings/${hex}`;
   try {
-    const vector = readFileSync(cachePath, "utf-8");
+    const vector = readFileSync(filePath, "utf-8");
     return JSON.parse(vector);
   } catch (e) {
     return null;

@@ -73,3 +73,8 @@
     - Parameter and return type information
   - Created template for converting extracted info to searchable chunks
 - Updated tsconfig.json with modern moduleResolution setting
+
+## 2025-05-03 10:00
+- Standardized embedding cache directory to `.seymour/embeddings/`
+- Removed `cacheDir` configuration option from readers
+- Updated cache functions and calls to use the fixed path

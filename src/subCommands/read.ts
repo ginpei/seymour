@@ -26,7 +26,6 @@ async function readMarkdownFiles(pathOrPattern: string) {
   const pattern = pathToMarkdownPattern(pathOrPattern);
 
   const chunks = await generateMarkdownChunks({
-    cacheDir: "./cache",
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
     pattern,
     onReadProgress: (index: number, length: number) => {
@@ -63,7 +62,6 @@ async function readTypeScriptFiles(pathOrPattern: string) {
   const pattern = pathToTypeScriptPattern(pathOrPattern);
 
   const chunks = await generateTypeScriptChunks({
-    cacheDir: "./cache",
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
     pattern,
     onReadProgress: (index: number, length: number) => {
