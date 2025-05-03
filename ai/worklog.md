@@ -78,3 +78,7 @@
 - Standardized embedding cache directory to `.seymour/embeddings/`
 - Removed `cacheDir` configuration option from readers
 - Updated cache functions and calls to use the fixed path
+- Refactored readers (`markdownReader`, `typescriptReader`) to use shared utilities:
+  - Extracted cache logic to `src/lib/cacheUtils.ts`
+  - Extracted chunk processing and embedding logic to `src/lib/chunkProcessor.ts`
+- Added `.seymour/` directory to `.gitignore`

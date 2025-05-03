@@ -1,8 +1,8 @@
 import { glob } from "fast-glob";
 import MarkdownIt from "markdown-it";
-import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { postTextEmbedding, ContentChunk, VectoredChunk } from "./llm";
+import { readFileSync } from "node:fs";
+import { ContentChunk, VectoredChunk } from "./llm";
+import { processChunksWithEmbedding } from "./chunkProcessor";
 
 export interface MarkdownReaderConfig {
   onReadProgress?: (index: number, length: number) => void;
@@ -16,7 +16,6 @@ const md = new MarkdownIt();
 /**
  * @example
  * const chunks = await generateMarkdownChunks({
- *   cacheDir: './cache',
  *   OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
  *   pattern: './docs/**\/*.md',
  *   onReadProgress: (index, length) => {
@@ -30,54 +29,17 @@ const md = new MarkdownIt();
  * writeFileSync('chunks.json', JSON.stringify(chunks, null, 2));
  * console.log(`Generated ${chunks.length} chunks`);
  */
-export async function generateMarkdownChunks(config: MarkdownReaderConfig) {
+export async function generateMarkdownChunks(config: MarkdownReaderConfig): Promise<VectoredChunk[]> {
   // Step 1: Read all markdown files and create chunks
   const chunks = await readMarkdowns(config.pattern);
-  
-  // Step 2: Check cache for each chunk and identify which ones need embedding
-  const chunksToEmbed: ContentChunk[] = [];
-  const vectoredChunks: VectoredChunk[] = [];
-  
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i];
-    const cachedVector = readEmbeddingCache(chunk.content, config);
-    
-    if (cachedVector) {
-      // Add to vectored chunks if cache exists
-      vectoredChunks.push({
-        ...chunk,
-        vector: cachedVector,
-      });
-    } else {
-      // Add to the list that needs embedding
-      chunksToEmbed.push(chunk);
-    }
-    
-    // Report reading progress
-    config.onReadProgress?.(i + 1, chunks.length);
-  }
-  
-  // Step 3: Generate embeddings for chunks without cache
-  if (chunksToEmbed.length === 0) {
-    config.onEmbedProgress?.(0, 0);
-  }
-  for (let i = 0; i < chunksToEmbed.length; i++) {
-    const chunk = chunksToEmbed[i];
-    const vector = await postTextEmbedding(chunk.content, config.OPENAI_API_KEY);
-    
-    // Add to result
-    vectoredChunks.push({
-      ...chunk,
-      vector,
-    });
-    
-    // Cache the embedding
-    cacheEmbedding(chunk.content, vector, config);
-    
-    // Report embedding progress
-    config.onEmbedProgress?.(i + 1, chunksToEmbed.length);
-  }
-  
+
+  // Step 2: Process chunks using the common processor
+  const vectoredChunks = await processChunksWithEmbedding(chunks, {
+    OPENAI_API_KEY: config.OPENAI_API_KEY,
+    onReadProgress: config.onReadProgress,
+    onEmbedProgress: config.onEmbedProgress,
+  });
+
   return vectoredChunks;
 }
 
@@ -146,35 +108,4 @@ function chunkMarkdown(body: string, filePath: string): ContentChunk[] {
   }
 
   return chunks;
-}
-
-function cacheEmbedding(
-  content: string,
-  vector: number[],
-  config: MarkdownReaderConfig,
-) {
-  const hash = createHash("sha256");
-  hash.update(content);
-  const hex = hash.digest("hex");
-
-  const filePath = `.seymour/embeddings/${hex}`;
-  mkdirSync('.seymour/embeddings', { recursive: true });
-  writeFileSync(filePath, JSON.stringify(vector));
-}
-
-function readEmbeddingCache(
-  content: string,
-  config: MarkdownReaderConfig,
-): number[] | null {
-  const hash = createHash("sha256");
-  hash.update(content);
-  const hex = hash.digest("hex");
-
-  const filePath = `.seymour/embeddings/${hex}`;
-  try {
-    const vector = readFileSync(filePath, "utf-8");
-    return JSON.parse(vector);
-  } catch (e) {
-    return null;
-  }
 }

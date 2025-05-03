@@ -1,11 +1,9 @@
 import { glob } from "fast-glob";
 import * as fs from "node:fs";
-import * as path from "node:path";
 import * as typescript from "typescript";
 import * as parser from "@typescript-eslint/parser";
-import { postTextEmbedding, ContentChunk, VectoredChunk } from "./llm";
-import { createHash } from "node:crypto";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { ContentChunk, VectoredChunk } from "./llm";
+import { processChunksWithEmbedding } from "./chunkProcessor";
 
 export interface TypeScriptReaderConfig {
   onReadProgress?: (index: number, length: number) => void;
@@ -30,53 +28,19 @@ interface TypeScriptItem {
  * Generate TypeScript chunks from files matching the given pattern
  */
 export async function generateTypeScriptChunks(config: TypeScriptReaderConfig): Promise<VectoredChunk[]> {
-  // Step 1: Read all TypeScript files
+  // Step 1: Read all TypeScript files and extract items
   const tsItems = await readTypeScriptFiles(config.pattern);
-  
+
   // Step 2: Convert items to chunks
   const chunks: ContentChunk[] = tsItems.map((item) => createChunkFromTypeScriptItem(item));
-  
-  // Step 3: Check cache for each chunk and identify which ones need embedding
-  const chunksToEmbed: ContentChunk[] = [];
-  const vectoredChunks: VectoredChunk[] = [];
-  
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i];
-    const cachedVector = readEmbeddingCache(chunk.content, config);
-    
-    if (cachedVector) {
-      // Add to vectored chunks if cache exists
-      vectoredChunks.push({
-        ...chunk,
-        vector: cachedVector,
-      });
-    } else {
-      // Add to the list that needs embedding
-      chunksToEmbed.push(chunk);
-    }
-    
-    // Report reading progress
-    config.onReadProgress?.(i + 1, chunks.length);
-  }
-  
-  // Step 4: Generate embeddings for chunks without cache
-  for (let i = 0; i < chunksToEmbed.length; i++) {
-    const chunk = chunksToEmbed[i];
-    const vector = await postTextEmbedding(chunk.content, config.OPENAI_API_KEY);
-    
-    // Add to result
-    vectoredChunks.push({
-      ...chunk,
-      vector,
-    });
-    
-    // Cache the embedding
-    cacheEmbedding(chunk.content, vector, config);
-    
-    // Report embedding progress
-    config.onEmbedProgress?.(i + 1, chunksToEmbed.length);
-  }
-  
+
+  // Step 3: Process chunks using the common processor
+  const vectoredChunks = await processChunksWithEmbedding(chunks, {
+    OPENAI_API_KEY: config.OPENAI_API_KEY,
+    onReadProgress: config.onReadProgress,
+    onEmbedProgress: config.onEmbedProgress,
+  });
+
   return vectoredChunks;
 }
 
@@ -324,35 +288,4 @@ function createChunkFromTypeScriptItem(item: TypeScriptItem): ContentChunk {
     content,
     charCount: content.length,
   };
-}
-
-function cacheEmbedding(
-  content: string,
-  vector: number[],
-  config: TypeScriptReaderConfig,
-) {
-  const hash = createHash("sha256");
-  hash.update(content);
-  const hex = hash.digest("hex");
-
-  const filePath = `.seymour/embeddings/${hex}`;
-  mkdirSync('.seymour/embeddings', { recursive: true });
-  writeFileSync(filePath, JSON.stringify(vector));
-}
-
-function readEmbeddingCache(
-  content: string,
-  config: TypeScriptReaderConfig,
-): number[] | null {
-  const hash = createHash("sha256");
-  hash.update(content);
-  const hex = hash.digest("hex");
-
-  const cachePath = `.seymour/embeddings/${hex}`;
-  try {
-    const vector = fs.readFileSync(cachePath, "utf-8");
-    return JSON.parse(vector);
-  } catch (e) {
-    return null;
-  }
 }
