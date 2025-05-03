@@ -82,3 +82,38 @@
   - Extracted cache logic to `src/lib/cacheUtils.ts`
   - Extracted chunk processing and embedding logic to `src/lib/chunkProcessor.ts`
 - Added `.seymour/` directory to `.gitignore`
+
+## 2025-05-03 11:00
+- Updated chunk management strategy:
+  - Chunks are now stored under `.seymour/chunks/`.
+  - Each `read` command execution (`type` + `pattern`) gets a unique SHA256 ID.
+  - Each ID has its own directory (`.seymour/chunks/<id>/`) containing:
+    - `meta.json`: Stores `{ id, type, pattern }`.
+    - `chunks.json`: Stores the `VectoredChunk[]`.
+  - `read` command now writes/overwrites these files.
+  - `search` command now reads and combines `chunks.json` from all ID directories.
+- Implemented the new strategy:
+  - Created `src/lib/chunkManager.ts` with helper functions.
+  - Updated `src/subCommands/read.ts` to use `chunkManager` for writing.
+  - Updated `src/subCommands/search.ts` to use `chunkManager` for reading all chunks.
+  - Removed the old `src/lib/cacheUtils.ts`.
+
+## 2025-05-03 11:15
+- Fixed incorrect import paths for `VectoredChunk` interface in `chunkManager.ts` and `read.ts`.
+
+## 2025-05-03 11:30
+- Restored `src/lib/cacheUtils.ts` to handle individual embedding caching, fixing the compile error in `chunkProcessor.ts`.
+
+## 2025-05-03 11:45
+- Refactored path management:
+  - Created `src/lib/paths.ts`.
+  - Moved `BASE_DIR_NAME`, `EMBEDDING_CACHE_DIR_NAME`, `CHUNKS_DIR_NAME` constants to `paths.ts`.
+  - Moved `getBaseDir`, `getEmbeddingCacheDir`, `getChunksDir`, `getChunkSetDir` functions to `paths.ts`.
+  - Updated `cacheUtils.ts` and `chunkManager.ts` to import these from `paths.ts`.
+- Refactored `cacheUtils.ts` to use a common helper function `getContentHash` for SHA256 calculation.
+- Removed unnecessary one-line comments from `cacheUtils.ts` and `chunkManager.ts`.
+- Simplified directory creation in `chunkManager.ts` using `mkdirSync`'s recursive option.
+- Updated `src/subCommands/search.ts` to use `chunkManager.readAllChunks` and adjusted error handling.
+
+## 2025-05-03 12:00
+- Start new worklog section.

@@ -1,40 +1,37 @@
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-
-const EMBEDDING_CACHE_DIR = ".seymour/embeddings";
+import { join } from "node:path";
+import { getEmbeddingCacheDir } from "./paths";
 
 /**
- * Cache the embedding vector for a given content string.
+ * Calculates the SHA256 hash for a given content string.
+ * @param content - The content string.
+ * @returns The SHA256 hash string.
  */
-export function cacheEmbedding(
-  content: string,
-  vector: number[],
-): void {
+function getContentHash(content: string): string {
   const hash = createHash("sha256");
   hash.update(content);
-  const hex = hash.digest("hex");
+  return hash.digest("hex");
+}
 
-  const filePath = `${EMBEDDING_CACHE_DIR}/${hex}`;
-  mkdirSync(EMBEDDING_CACHE_DIR, { recursive: true });
+export function cacheEmbedding(content: string, vector: number[]): void {
+  const hex = getContentHash(content);
+
+  const cacheDir = getEmbeddingCacheDir();
+  const filePath = join(cacheDir, hex);
+  mkdirSync(cacheDir, { recursive: true });
   writeFileSync(filePath, JSON.stringify(vector));
 }
 
-/**
- * Read the cached embedding vector for a given content string.
- */
-export function readEmbeddingCache(
-  content: string,
-): number[] | null {
-  const hash = createHash("sha256");
-  hash.update(content);
-  const hex = hash.digest("hex");
+export function readEmbeddingCache(content: string): number[] | null {
+  const hex = getContentHash(content);
 
-  const filePath = `${EMBEDDING_CACHE_DIR}/${hex}`;
+  const cacheDir = getEmbeddingCacheDir();
+  const filePath = join(cacheDir, hex);
   try {
     const vectorJson = readFileSync(filePath, "utf-8");
     return JSON.parse(vectorJson);
   } catch (e) {
-    // Cache miss or error reading file
     return null;
   }
 }

@@ -1,5 +1,9 @@
 import { existsSync, statSync } from "node:fs";
-import { writeChunks } from "../lib/files";
+import {
+  calculateChunkSetId,
+  writeChunksFile,
+  writeMetaFile,
+} from "../lib/chunkManager";
 import { generateMarkdownChunks } from "../lib/markdownReader";
 import { generateTypeScriptChunks } from "../lib/typescriptReader";
 
@@ -24,6 +28,8 @@ export async function read(type: string, pathOrPattern: string) {
  */
 async function readMarkdownFiles(pathOrPattern: string) {
   const pattern = pathToMarkdownPattern(pathOrPattern);
+  const type = "md";
+  const id = calculateChunkSetId(type, pattern);
 
   const chunks = await generateMarkdownChunks({
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
@@ -51,8 +57,11 @@ async function readMarkdownFiles(pathOrPattern: string) {
     },
   });
 
-  writeChunks(chunks);
-  console.log(`Generated ${chunks.length} chunks`);
+  writeMetaFile(id, { id, type, pattern });
+  writeChunksFile(id, chunks);
+  console.log(
+    `Generated ${chunks.length} chunks for ${type} pattern "${pattern}" (ID: ${id})`,
+  );
 }
 
 /**
@@ -60,6 +69,8 @@ async function readMarkdownFiles(pathOrPattern: string) {
  */
 async function readTypeScriptFiles(pathOrPattern: string) {
   const pattern = pathToTypeScriptPattern(pathOrPattern);
+  const type = "ts";
+  const id = calculateChunkSetId(type, pattern);
 
   const chunks = await generateTypeScriptChunks({
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
@@ -82,8 +93,11 @@ async function readTypeScriptFiles(pathOrPattern: string) {
     },
   });
 
-  writeChunks(chunks);
-  console.log(`Generated ${chunks.length} chunks`);
+  writeMetaFile(id, { id, type, pattern });
+  writeChunksFile(id, chunks);
+  console.log(
+    `Generated ${chunks.length} chunks for ${type} pattern "${pattern}" (ID: ${id})`,
+  );
 }
 
 /**
