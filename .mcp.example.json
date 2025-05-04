@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "@ginpei/seymour": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@ginpei/seymour",
+        "mcp"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx..."
+      }
+    }
+  }
+}

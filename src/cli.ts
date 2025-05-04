@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { read } from "./subCommands/read";
 import { search } from "./subCommands/search";
 import { sourceSubCommand } from "./subCommands/source";
+import { mcpSubCommand } from "./subCommands/mcp";
 
 dotenv.config();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
@@ -39,6 +40,11 @@ function main() {
     .command("source")
     .description("List all sources that have been read")
     .action(sourceSubCommand);
+
+  program
+    .command("mcp")
+    .description("Start the MCP server for AI agent interaction")
+    .action(mcpSubCommand);
 
   program.parse();
 }

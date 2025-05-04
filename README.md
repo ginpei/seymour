@@ -10,7 +10,8 @@ A simple CLI tool for semantic search over local Markdown documentation using Op
 - ✂️ Heading-based chunking of `.md` files  
 - 🔍 Cosine similarity-based ranking  
 - 📁 Outputs all data in a single `chunks.json` file  
-- ⚙️ Runs fully locally (except for embedding API)
+- ⚙️ Runs fully locally (except for embedding API)  
+- 🔌 Exposes search functionality via Model Context Protocol (MCP)
 
 ---
 
@@ -61,6 +62,38 @@ seymour search "How to initialize the Foo component"
 - Embeds your query  
 - Compares it to all chunks using cosine similarity  
 - Returns the top 5 matching chunks
+
+### 3. Run as an MCP Server
+
+To connect an MCP client (e.g., a VS Code extension) to this server, you need to configure how the client should run the server, which is by `seymour mcp` command. Here's an example configuration file (`.mcp.json` or similar, depending on the client):
+
+```json
+{
+  "mcpServers": {
+    "ginpei-seymour": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@ginpei/seymour",
+        "mcp"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "YOUR_OPENAI_API_KEY_HERE"
+      }
+    }
+  }
+}
+```
+
+- Replace `"YOUR_OPENAI_API_KEY_HERE"` with your actual OpenAI API key.
+
+#### Example MCP Method for AI Agents
+
+AI agents interacting with this MCP server can use methods like `suggestFileToSearch`. It's recommended to use this method first when searching for information in the codebase:
+
+```
+Always use mcp__ginpei-seymour__suggestFileToSearch first when searching for information in the codebase.
+```
 
 ---
 

@@ -132,3 +132,20 @@
     - Prompt for confirmation using `confirm` before deletion.
     - Delete the selected source's directory (`.seymour/chunks/<id>/`) upon confirmation.
     - Added error handling for prompt cancellation and file system operations.
+
+## 2025-05-03 13:00
+- Added new `mcp` subcommand to start an MCP server.
+- Installed `@modelcontextprotocol/sdk` and `zod` dependencies.
+- Created `src/subCommands/mcp.ts` with basic server setup.
+- Implemented `searchCodebase` tool within the MCP server:
+  - Reuses `readAllChunks`, `postTextEmbedding`, and `findTopMatches` from existing search logic.
+  - Takes a query string as input.
+  - Returns a JSON array of recommended file paths.
+- Integrated the `mcp` command into `src/cli.ts`.
+- Updated MCP tool name to `searchCodebase` and refined its description for clarity.
+
+## 2025-05-04 00:00
+- Add MCP server subcommand (`seymour mcp`).
+- Implement `suggestFileToSearch` tool for semantic file recommendations.
+- Update README with MCP details, usage, and client configuration examples.
+- Add `.mcp.example.json`.
