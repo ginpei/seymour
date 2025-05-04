@@ -31,6 +31,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@inquirer/prompts": "^7.5.0",
     "@typescript-eslint/parser": "^8.30.1",
     "@typescript-eslint/types": "^8.30.1",
     "@typescript-eslint/typescript-estree": "^8.30.1",

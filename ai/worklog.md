@@ -122,3 +122,13 @@
   - Registered the `source` command in `src/cli.ts`.
   - Updated output format to `[type] pattern`.
   - Removed unnecessary comments added during implementation.
+
+## 2025-05-03 12:15
+- Enhanced `source` subcommand for interactive deletion:
+  - Installed `@inquirer/prompts` library.
+  - Modified `src/subCommands/source.ts` to:
+    - List sources using `select` prompt.
+    - Include a "Cancel" option at the top of the list.
+    - Prompt for confirmation using `confirm` before deletion.
+    - Delete the selected source's directory (`.seymour/chunks/<id>/`) upon confirmation.
+    - Added error handling for prompt cancellation and file system operations.
