@@ -26,6 +26,12 @@
 - You must use this language in entire conversation except for sub contents like list, table, and example code
 - For all other content including documentation, comments, and commit messages, use standard professional English
 
+## Coding Style
+
+- Write code as a specialist
+- Write comments properly. Never write comments to explain changes during AI agent editing
+- Review your code by yourself
+
 ## Documentation Requirements
 
 - Maintain a work log at `./ai/worklog.md`

@@ -149,3 +149,5 @@
 - Implement `suggestFileToSearch` tool for semantic file recommendations.
 - Update README with MCP details, usage, and client configuration examples.
 - Add `.mcp.example.json`.
+- Updated README.md to accurately reflect current features, data storage, and command usage.
+- Replaced `seymour xxx` command examples with `npx @ginpei/seymour xxx` for better compatibility.

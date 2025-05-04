@@ -6,11 +6,12 @@ A simple CLI tool for semantic search over local Markdown documentation using Op
 
 ## Features
 
-- 🧠 Natural language search over Markdown documents  
-- ✂️ Heading-based chunking of `.md` files  
-- 🔍 Cosine similarity-based ranking  
-- 📁 Outputs all data in a single `chunks.json` file  
-- ⚙️ Runs fully locally (except for embedding API)  
+- 🧠 Natural language search over Markdown documents
+- ✂️ Heading-based chunking of `.md` files
+- 🌲 Code-aware chunking for `.ts` files (functions, classes, interfaces, etc.)
+- 🔍 Cosine similarity-based ranking
+- 📁 Outputs data per source into `.seymour/chunks/<id>/` directories (including `chunks.json` and `meta.json`)
+- ⚙️ Runs fully locally (except for embedding API)
 - 🔌 Exposes search functionality via Model Context Protocol (MCP)
 
 ---
@@ -36,36 +37,50 @@ Requires:
 
 ### 1. Generate chunk and embedding data
 
-```bash
-seymour read md "./docs/**/*.md"
-```
-
-- Recursively scans for `.md` files  
-- Splits content at headings (`#`, `##`, etc.)  
-- Uses OpenAI `text-embedding-3-small` to embed each chunk  
-- Outputs to `chunks.json`
-
-#### TypeScript Support (Coming Soon)
+**For Markdown:**
 
 ```bash
-seymour read ts "./src/**/*.ts"
+npx @ginpei/seymour read md "./docs/**/*.md"
 ```
 
-- Support for TypeScript files is under development
+- Recursively scans for `.md` files based on the provided pattern or directory.
+- Splits content at headings (`#`, `##`, etc.).
+- Uses OpenAI `text-embedding-3-small` to embed each chunk.
+- Outputs metadata and chunk data to a dedicated directory under `.seymour/chunks/`.
+
+**For TypeScript:**
+
+```bash
+npx @ginpei/seymour read ts "./src/**/*.ts"
+```
+
+- Recursively scans for `.ts` and `.tsx` files based on the provided pattern or directory.
+- Splits code into logical chunks (functions, classes, interfaces, etc.).
+- Uses OpenAI `text-embedding-3-small` to embed each chunk.
+- Outputs metadata and chunk data to a dedicated directory under `.seymour/chunks/`.
 
 ### 2. Search with a natural language query
 
 ```bash
-seymour search "How to initialize the Foo component"
+npx @ginpei/seymour search "How to initialize the Foo component"
 ```
 
-- Embeds your query  
-- Compares it to all chunks using cosine similarity  
-- Returns the top 5 matching chunks
+- Embeds your query.
+- Compares it to all chunks from all generated sources using cosine similarity.
+- Returns the top 5 matching chunks.
 
-### 3. Run as an MCP Server
+### 3. List and manage sources
 
-To connect an MCP client (e.g., a VS Code extension) to this server, you need to configure how the client should run the server, which is by `seymour mcp` command. Here's an example configuration file (`.mcp.json` or similar, depending on the client):
+```bash
+npx @ginpei/seymour source
+```
+
+- Lists all the sources (chunk sets) that have been generated using the `read` command.
+- Allows you to select and delete specific sources if they are no longer needed.
+
+### 4. Run as an MCP Server
+
+To connect an MCP client (e.g., a VS Code extension) to this server, you need to configure how the client should run the server, which is by `npx @ginpei/seymour mcp` command. Here's an example configuration file (`.mcp.json` or similar, depending on the client):
 
 ```json
 {
@@ -97,15 +112,22 @@ Always use mcp__ginpei-seymour__suggestFileToSearch first when searching for inf
 
 ---
 
-## Output Example
+## Output Example (Search)
+
+When using the `search` command, the output might look like this:
 
 ```
-#1 [0.912] How to use Foo (docs/foo.md)
-The Foo component must be initialized using...
-
-#2 [0.881] Initialization overview (docs/setup.md)
-Before using any component...
+Embedding your question... About: How to initialize the Foo component
+Top matches (15 ms/123 chunks): [
+  'docs/foo.md (0.91)',
+  'docs/setup.md (0.88)',
+  'src/components/Foo.ts (0.85)',
+  'docs/examples.md (0.82)',
+  'src/utils/init.ts (0.80)'
+]
 ```
+
+*(Note: The exact format and similarity scores may vary)*
 
 ---
 
@@ -121,23 +143,6 @@ Or use a `.env` file in your project root:
 
 ```
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxx
-```
-
----
-
-## Output: `chunks.json` format
-
-```json
-[
-  {
-    "id": "uuid-123",
-    "filePath": "docs/foo.md",
-    "header": "How to use Foo",
-    "content": "The Foo component must be...",
-    "charCount": 128,
-    "vector": [0.001, -0.234, ...]
-  }
-]
 ```
 
 ---
