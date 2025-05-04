@@ -3,6 +3,7 @@ import { Command } from "commander";
 import dotenv from "dotenv";
 import { read } from "./subCommands/read";
 import { search } from "./subCommands/search";
+import { sourceSubCommand } from "./subCommands/source";
 
 dotenv.config();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
@@ -33,6 +34,11 @@ function main() {
     .argument("<query>", "Natural language query")
     .description("Search chunks using semantic similarity")
     .action((query) => search(query, OPENAI_API_KEY));
+
+  program
+    .command("source")
+    .description("List all sources that have been read")
+    .action(sourceSubCommand);
 
   program.parse();
 }

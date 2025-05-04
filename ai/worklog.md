@@ -116,4 +116,9 @@
 - Updated `src/subCommands/search.ts` to use `chunkManager.readAllChunks` and adjusted error handling.
 
 ## 2025-05-03 12:00
-- Start new worklog section.
+- Added a new subcommand `source`:
+  - Created `src/subCommands/source.ts`.
+  - Implemented logic to list all source patterns by reading `meta.json` files from `.seymour/chunks/<id>/` directories.
+  - Registered the `source` command in `src/cli.ts`.
+  - Updated output format to `[type] pattern`.
+  - Removed unnecessary comments added during implementation.
