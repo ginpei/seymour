@@ -5,7 +5,7 @@ import { readAllChunks } from "../lib/chunkManager";
 import { findTopMatches, postTextEmbedding, VectoredChunk, MatchedChunk } from "../lib/llm";
 
 const searchCodeSnippetsArgs = {
-  query: z.string().describe("The natural language query to search for."),
+  query: z.string().describe("The natural language query to search for. AI agent should modify original query to be more specific if needed."),
 };
 
 /**
@@ -25,7 +25,7 @@ export async function mcpSubCommand() {
 
   server.tool(
     "searchCodeSnippets",
-    "Searches the codebase, including chapters and sections from markdown files, and returns relevant code snippets with similarity scores.",
+    "Searches the codebase, including chapters and sections from markdown files, and returns relevant code snippets with similarity scores. AI agent should try to find out answer from this result and avoid re-searching files if possible.",
     searchCodeSnippetsArgs,
     async (req) => {
       const { query } = req;
