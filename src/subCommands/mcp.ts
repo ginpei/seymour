@@ -15,7 +15,7 @@ const recommendFilesArgs = {
 export async function mcpSubCommand() {
   const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
   if (!OPENAI_API_KEY) {
-    console.error("\x1b[31mError: OPENAI_API_KEY is not set.\x1b[0m");
+    console.error("[@ginpei/seymour] \x1b[31mError: OPENAI_API_KEY is not set.\x1b[0m");
     process.exit(1);
   }
 
@@ -30,18 +30,17 @@ export async function mcpSubCommand() {
     recommendFilesArgs,
     async (req) => {
       const { query } = req;
-      console.log(`Received suggestFileToSearch request with query: "${query}"`);
 
       let chunks: VectoredChunk[];
       try {
         chunks = readAllChunks();
         if (chunks.length === 0) {
-          console.error("No chunks found. Please run the 'read' command first.");
+          console.error("[@ginpei/seymour] No chunks found. Please run the 'read' command first.");
           // Return an empty list or an error message? Returning empty for now.
           return { content: [{ type: "text", text: "[]" }] };
         }
       } catch (error) {
-        console.error("Error reading chunks:", error);
+        console.error("[@ginpei/seymour] Error reading chunks:", error);
         // How to best report errors via MCP? Sending a text message for now.
         return {
           content: [
@@ -52,21 +51,18 @@ export async function mcpSubCommand() {
 
       try {
         const embeddingQuery = `About: ${query}`;
-        console.log(`Embedding query...`);
         const vector = await postTextEmbedding(embeddingQuery, OPENAI_API_KEY);
 
-        console.log(`Finding top matches...`);
         const topMatches = findTopMatches(chunks, vector, 5);
 
         const filePaths = topMatches.map((match) => match.filePath);
-        console.log("Recommended files:", filePaths);
 
         // Return the file paths as a JSON string array
         return {
           content: [{ type: "text", text: JSON.stringify(filePaths) }],
         };
       } catch (error) {
-        console.error("Error processing suggestFileToSearch request:", error);
+        console.error("[@ginpei/seymour] Error processing suggestFileToSearch request:", error);
         return {
           content: [
             {
@@ -83,5 +79,4 @@ export async function mcpSubCommand() {
   const transport = new StdioServerTransport();
   server.connect(transport);
 
-  console.log("MCP server started. Waiting for requests...");
 }

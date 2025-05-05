@@ -151,3 +151,8 @@
 - Add `.mcp.example.json`.
 - Updated README.md to accurately reflect current features, data storage, and command usage.
 - Replaced `seymour xxx` command examples with `npx @ginpei/seymour xxx` for better compatibility.
+
+## 2025-05-04 00:15
+- Refactor MCP server logging:
+  - Remove `console.log` calls to avoid interfering with stdio transport.
+  - Add `[@ginpei/seymour]` prefix to `console.error` messages for clarity.
