@@ -2,10 +2,9 @@ import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { readAllChunks } from "../lib/chunkManager";
-import { findTopMatches, postTextEmbedding, VectoredChunk } from "../lib/llm";
+import { findTopMatches, postTextEmbedding, VectoredChunk, MatchedChunk } from "../lib/llm";
 
-// Define the input schema for the recommendFiles tool
-const recommendFilesArgs = {
+const searchCodeSnippetsArgs = {
   query: z.string().describe("The natural language query to search for."),
 };
 
@@ -25,9 +24,9 @@ export async function mcpSubCommand() {
   });
 
   server.tool(
-    "suggestFileToSearch",
-    "Suggests relevant files to search for information in the codebase.",
-    recommendFilesArgs,
+    "searchCodeSnippets",
+    "Searches the codebase, including chapters and sections from markdown files, and returns relevant code snippets with similarity scores.",
+    searchCodeSnippetsArgs,
     async (req) => {
       const { query } = req;
 
@@ -36,15 +35,16 @@ export async function mcpSubCommand() {
         chunks = readAllChunks();
         if (chunks.length === 0) {
           console.error("[@ginpei/seymour] No chunks found. Please run the 'read' command first.");
-          // Return an empty list or an error message? Returning empty for now.
           return { content: [{ type: "text", text: "[]" }] };
         }
       } catch (error) {
         console.error("[@ginpei/seymour] Error reading chunks:", error);
-        // How to best report errors via MCP? Sending a text message for now.
         return {
           content: [
-            { type: "text", text: `Error reading chunks: ${error}` },
+            {
+              type: "text",
+              text: `Error reading chunks: ${error instanceof Error ? error.message : String(error)}`,
+            },
           ],
         };
       }
@@ -55,19 +55,23 @@ export async function mcpSubCommand() {
 
         const topMatches = findTopMatches(chunks, vector, 5);
 
-        const filePaths = topMatches.map((match) => match.filePath);
+        const matchedResults = topMatches.map((match) => ({
+          similarity: match.similarity,
+          filePath: match.filePath,
+          header: match.header,
+          content: match.content,
+        }));
 
-        // Return the file paths as a JSON string array
         return {
-          content: [{ type: "text", text: JSON.stringify(filePaths) }],
+          content: [{ type: "text", text: JSON.stringify(matchedResults) }],
         };
       } catch (error) {
-        console.error("[@ginpei/seymour] Error processing suggestFileToSearch request:", error);
+        console.error("[@ginpei/seymour] Error processing searchCodeSnippets request:", error);
         return {
           content: [
             {
               type: "text",
-              text: `Error processing request: ${error}`,
+              text: `Error processing request: ${error instanceof Error ? error.message : String(error)}`,
             },
           ],
         };

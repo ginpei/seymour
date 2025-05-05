@@ -156,3 +156,7 @@
 - Refactor MCP server logging:
   - Remove `console.log` calls to avoid interfering with stdio transport.
   - Add `[@ginpei/seymour]` prefix to `console.error` messages for clarity.
+- Define `MatchedChunk` type in `src/lib/llm.ts` for `findTopMatches` return value.
+- Update `search` subcommand (`src/subCommands/search.ts`) to display matched content details (similarity, file path, header, content) instead of just file paths.
+- Rename MCP tool from `suggestFileToSearch` to `searchCodeSnippets` in `src/subCommands/mcp.ts`.
+- Update `searchCodeSnippets` tool to return matched content details (similarity, file path, header, content) as a JSON string, matching the `search` command's output style.

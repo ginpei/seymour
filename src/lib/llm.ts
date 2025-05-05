@@ -10,6 +10,14 @@ export interface VectoredChunk extends ContentChunk {
 }
 
 /**
+ * Represents a chunk that has been matched against a query vector.
+ * Includes the original chunk data and the similarity score.
+ */
+export interface MatchedChunk extends VectoredChunk {
+  similarity: number;
+}
+
+/**
  * Requests OpenAI API to get text embedding for the given input string
  * @see https://platform.openai.com/docs/guides/embeddings
  */
@@ -60,39 +68,17 @@ export function findTopMatches(
   chunks: VectoredChunk[],
   queryVector: number[],
   limit: number = 5,
-): { filePath: string; similarity: number }[] {
-  const fileScoresMap: Record<string, number[]> = {};
-
-  for (const chunk of chunks) {
-    if (fileScoresMap[chunk.filePath] === undefined) {
-      fileScoresMap[chunk.filePath] = [];
-    }
-
-    const score = cosineSimilarity(chunk.vector, queryVector);
-    fileScoresMap[chunk.filePath].push(score);
-  }
-
-  const scores = Object.entries(fileScoresMap).map(
-    ([filePath, similarity]) => ({
-      filePath,
-      similarity,
-    }),
-  );
-
-  const chunkLimit = 5;
-  const topScores = scores.map((score) => ({
-    filePath: score.filePath,
-    similarity: score.similarity
-      .sort((a, b) => b - a)
-      .slice(0, chunkLimit)
-      .reduce((a, b) => a + b, 0),
+): MatchedChunk[] {
+  const chunkScores: MatchedChunk[] = chunks.map(chunk => ({
+    ...chunk,
+    similarity: cosineSimilarity(chunk.vector, queryVector),
   }));
 
-  const topFiles = topScores
-    .sort((a, b) => b.similarity - a.similarity)
-    .slice(0, limit);
+  // Sort chunks by similarity in descending order
+  chunkScores.sort((a, b) => b.similarity - a.similarity);
 
-  return topFiles;
+  // Return the top N chunks
+  return chunkScores.slice(0, limit);
 }
 
 /**

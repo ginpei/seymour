@@ -1,5 +1,5 @@
 import { readAllChunks } from "../lib/chunkManager";
-import { findTopMatches, postTextEmbedding, VectoredChunk } from "../lib/llm";
+import { findTopMatches, postTextEmbedding, VectoredChunk, MatchedChunk } from "../lib/llm";
 
 export async function search(question: string, OPENAI_API_KEY: string) {
   let chunks: VectoredChunk[];
@@ -35,6 +35,13 @@ export async function search(question: string, OPENAI_API_KEY: string) {
 
   console.log(
     `Top matches (${elapsed} ms/${chunks.length} chunks):`,
-    topMatches.map((v) => `${v.filePath} (${v.similarity.toFixed(2)})`),
   );
+  topMatches.forEach((match, index) => {
+    console.log(`\n--- Match ${index + 1} (Similarity: ${match.similarity.toFixed(3)}) ---`);
+    console.log(`File: ${match.filePath}`);
+    if (match.header) {
+      console.log(`Header: ${match.header}`);
+    }
+    console.log(`Content:\n${match.content}`);
+  });
 }
