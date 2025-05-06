@@ -1,6 +1,6 @@
-import { ContentChunk, VectoredChunk } from "./search";
-import { cacheEmbedding, readEmbeddingCache } from "./cache";
-import { postTextEmbedding } from "./openAi";
+import { ContentChunk, VectoredChunk } from "../search";
+import { cacheEmbedding, readEmbeddingCache } from "../cache";
+import { postTextEmbedding } from "../openAi";
 
 export interface ChunkProcessorConfig {
   onReadProgress?: (index: number, length: number) => void;

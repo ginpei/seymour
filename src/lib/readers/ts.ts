@@ -3,7 +3,7 @@ import * as fs from "node:fs";
 import * as typescript from "typescript";
 import * as parser from "@typescript-eslint/parser";
 import { ContentChunk, VectoredChunk } from "../search";
-import { processChunksWithEmbedding } from "../chunkProcessor";
+import { processChunksWithEmbedding } from "./chunkProcessor";
 
 export interface TypeScriptReaderConfig {
   onReadProgress?: (index: number, length: number) => void;
