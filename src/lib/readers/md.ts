@@ -1,7 +1,7 @@
 import { glob } from "fast-glob";
 import MarkdownIt from "markdown-it";
 import { readFileSync } from "node:fs";
-import { ContentChunk, VectoredChunk } from "../llm";
+import { ContentChunk, VectoredChunk } from "../search";
 import { processChunksWithEmbedding } from "../chunkProcessor";
 
 export interface MarkdownReaderConfig {

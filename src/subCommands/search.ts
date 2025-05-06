@@ -1,5 +1,6 @@
 import { readAllChunks } from "../lib/chunk";
-import { findTopMatches, postTextEmbedding, VectoredChunk, MatchedChunk } from "../lib/llm";
+import { postTextEmbedding } from "../lib/openAi";
+import { findTopMatches, VectoredChunk, MatchedChunk } from "../lib/search";
 
 export async function search(question: string, OPENAI_API_KEY: string) {
   let chunks: VectoredChunk[];

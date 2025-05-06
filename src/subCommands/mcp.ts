@@ -2,7 +2,8 @@ import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { readAllChunks } from "../lib/chunk";
-import { findTopMatches, postTextEmbedding, VectoredChunk, MatchedChunk } from "../lib/llm";
+import { findTopMatches, VectoredChunk, MatchedChunk } from "../lib/search";
+import { postTextEmbedding } from "../lib/openAi";
 
 const searchCodeSnippetsArgs = {
   query: z.string().describe("The natural language query to search for. AI agent should modify original query to be more specific if needed."),

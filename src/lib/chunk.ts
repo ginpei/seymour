@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { VectoredChunk } from "./llm";
+import { VectoredChunk } from "./search";
 import { getBaseDir, getChunksDir, getChunkSetDir } from "./paths";
 
 /**
