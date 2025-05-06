@@ -4,13 +4,7 @@ import * as typescript from "typescript";
 import * as parser from "@typescript-eslint/parser";
 import { ContentChunk, VectoredChunk } from "../search";
 import { processChunksWithEmbedding } from "./chunkProcessor";
-
-export interface TypeScriptReaderConfig {
-  onReadProgress?: (index: number, length: number) => void;
-  onEmbedProgress?: (index: number, length: number) => void;
-  OPENAI_API_KEY: string;
-  pattern: string;
-}
+import { ReaderConfig } from "./ReaderConfig";
 
 interface TypeScriptItem {
   name: string;
@@ -27,7 +21,7 @@ interface TypeScriptItem {
 /**
  * Generate TypeScript chunks from files matching the given pattern
  */
-export async function generateTypeScriptChunks(config: TypeScriptReaderConfig): Promise<VectoredChunk[]> {
+export async function generateTypeScriptChunks(config: ReaderConfig): Promise<VectoredChunk[]> {
   // Step 1: Read all TypeScript files and extract items
   const tsItems = await readTypeScriptFiles(config.pattern);
 
@@ -35,11 +29,7 @@ export async function generateTypeScriptChunks(config: TypeScriptReaderConfig): 
   const chunks: ContentChunk[] = tsItems.map((item) => createChunkFromTypeScriptItem(item));
 
   // Step 3: Process chunks using the common processor
-  const vectoredChunks = await processChunksWithEmbedding(chunks, {
-    OPENAI_API_KEY: config.OPENAI_API_KEY,
-    onReadProgress: config.onReadProgress,
-    onEmbedProgress: config.onEmbedProgress,
-  });
+  const vectoredChunks = await processChunksWithEmbedding(chunks, config);
 
   return vectoredChunks;
 }

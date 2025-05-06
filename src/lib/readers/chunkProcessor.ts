@@ -1,12 +1,7 @@
 import { ContentChunk, VectoredChunk } from "../search";
 import { cacheEmbedding, readEmbeddingCache } from "../cache";
 import { postTextEmbedding } from "../openAi";
-
-export interface ChunkProcessorConfig {
-  onReadProgress?: (index: number, length: number) => void;
-  onEmbedProgress?: (index: number, length: number) => void;
-  OPENAI_API_KEY: string;
-}
+import { ReaderConfig } from "./ReaderConfig";
 
 /**
  * Processes an array of ContentChunks, checks cache, generates embeddings for missing ones,
@@ -14,7 +9,7 @@ export interface ChunkProcessorConfig {
  */
 export async function processChunksWithEmbedding(
   chunks: ContentChunk[],
-  config: ChunkProcessorConfig,
+  config: ReaderConfig,
 ): Promise<VectoredChunk[]> {
   const chunksToEmbed: ContentChunk[] = [];
   const vectoredChunks: VectoredChunk[] = [];

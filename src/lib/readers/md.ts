@@ -3,13 +3,7 @@ import MarkdownIt from "markdown-it";
 import { readFileSync } from "node:fs";
 import { ContentChunk, VectoredChunk } from "../search";
 import { processChunksWithEmbedding } from "./chunkProcessor";
-
-export interface MarkdownReaderConfig {
-  onReadProgress?: (index: number, length: number) => void;
-  onEmbedProgress?: (index: number, length: number) => void;
-  OPENAI_API_KEY: string;
-  pattern: string;
-}
+import { ReaderConfig } from "./ReaderConfig";
 
 const md = new MarkdownIt();
 
@@ -29,16 +23,12 @@ const md = new MarkdownIt();
  * writeFileSync('chunks.json', JSON.stringify(chunks, null, 2));
  * console.log(`Generated ${chunks.length} chunks`);
  */
-export async function generateMarkdownChunks(config: MarkdownReaderConfig): Promise<VectoredChunk[]> {
+export async function generateMarkdownChunks(config: ReaderConfig): Promise<VectoredChunk[]> {
   // Step 1: Read all markdown files and create chunks
   const chunks = await readMarkdowns(config.pattern);
 
   // Step 2: Process chunks using the common processor
-  const vectoredChunks = await processChunksWithEmbedding(chunks, {
-    OPENAI_API_KEY: config.OPENAI_API_KEY,
-    onReadProgress: config.onReadProgress,
-    onEmbedProgress: config.onEmbedProgress,
-  });
+  const vectoredChunks = await processChunksWithEmbedding(chunks, config);
 
   return vectoredChunks;
 }
