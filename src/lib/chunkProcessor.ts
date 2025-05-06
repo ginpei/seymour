@@ -1,5 +1,5 @@
 import { ContentChunk, VectoredChunk, postTextEmbedding } from "./llm";
-import { cacheEmbedding, readEmbeddingCache } from "./cacheUtils";
+import { cacheEmbedding, readEmbeddingCache } from "./cache";
 
 export interface ChunkProcessorConfig {
   onReadProgress?: (index: number, length: number) => void;

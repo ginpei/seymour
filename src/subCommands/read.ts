@@ -3,9 +3,9 @@ import {
   calculateChunkSetId,
   writeChunksFile,
   writeMetaFile,
-} from "../lib/chunkManager";
-import { generateMarkdownChunks } from "../lib/markdownReader";
-import { generateTypeScriptChunks } from "../lib/typescriptReader";
+} from "../lib/chunk";
+import { generateMarkdownChunks } from "../lib/readers/md";
+import { generateTypeScriptChunks } from "../lib/readers/ts";
 
 export async function read(type: string, pathOrPattern: string) {
   // Handle different document types

@@ -2,8 +2,8 @@ import { glob } from "fast-glob";
 import * as fs from "node:fs";
 import * as typescript from "typescript";
 import * as parser from "@typescript-eslint/parser";
-import { ContentChunk, VectoredChunk } from "./llm";
-import { processChunksWithEmbedding } from "./chunkProcessor";
+import { ContentChunk, VectoredChunk } from "../llm";
+import { processChunksWithEmbedding } from "../chunkProcessor";
 
 export interface TypeScriptReaderConfig {
   onReadProgress?: (index: number, length: number) => void;

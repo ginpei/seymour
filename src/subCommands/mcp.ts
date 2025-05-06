@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { readAllChunks } from "../lib/chunkManager";
+import { readAllChunks } from "../lib/chunk";
 import { findTopMatches, postTextEmbedding, VectoredChunk, MatchedChunk } from "../lib/llm";
 
 const searchCodeSnippetsArgs = {

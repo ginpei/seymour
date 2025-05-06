@@ -1,4 +1,4 @@
-import { readAllChunks } from "../lib/chunkManager";
+import { readAllChunks } from "../lib/chunk";
 import { findTopMatches, postTextEmbedding, VectoredChunk, MatchedChunk } from "../lib/llm";
 
 export async function search(question: string, OPENAI_API_KEY: string) {

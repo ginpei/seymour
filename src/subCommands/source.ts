@@ -1,9 +1,9 @@
 import { select, confirm } from "@inquirer/prompts";
 import { readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { listChunkSetIds } from "../lib/chunkManager";
+import { listChunkSetIds } from "../lib/chunk";
 import { getChunkSetDir } from "../lib/paths";
-import { ChunkSetMeta } from "../lib/chunkManager";
+import { ChunkSetMeta } from "../lib/chunk";
 
 interface SourceChoice {
   name: string;
